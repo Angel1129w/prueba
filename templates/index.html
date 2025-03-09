@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Compra de Huevos</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        form {
+            max-width: 600px;
+            margin: auto;
+        }
+        label {
+            display: block;
+            margin-top: 10px;
+        }
+        input, select, button {
+            width: 100%;
+            padding: 8px;
+            margin-top: 5px;
+        }
+        button {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Formulario de Compra de Huevos</h1>
+
+    <form action="/ventas" method="POST">
+        <h2>Datos del Cliente</h2>
+
+        <label for="nombre">Nombre:</label>
+        <input type="text" id="nombre" name="nombre" required>
+
+        <label for="telefono">Teléfono:</label>
+        <input type="text" id="telefono" name="telefono" required>
+
+        <label for="direccion">Dirección:</label>
+        <input type="text" id="direccion" name="direccion" required>
+
+        <h2>Seleccionar Producto</h2>
+
+        <label for="modo">Comprar por:</label>
+        <select id="modo" name="modo" onchange="actualizarPrecios()">
+            <option value="cubeta">Cubeta</option>
+            <option value="unidad">Unidad</option>
+        </select>
+
+        <div id="productos">
+            <!-- Producto 1 -->
+            <label for="huevo1">Tipo de Huevo:</label>
+            <select id="huevo1" name="huevo1" onchange="actualizarPrecios()">
+                <option value="HUEVO BLANCO A">HUEVO BLANCO A</option>
+                <option value="HUEVO BLANCO AA">HUEVO BLANCO AA</option>
+                <option value="HUEVO BLANCO B">HUEVO BLANCO B</option>
+                <option value="HUEVO BLANCO EXTRA">HUEVO BLANCO EXTRA</option>
+                <option value="HUEVO ROJO A">HUEVO ROJO A</option>
+                <option value="HUEVO ROJO AA">HUEVO ROJO AA</option>
+                <option value="HUEVO ROJO B">HUEVO ROJO B</option>
+                <option value="HUEVO ROJO EXTRA">HUEVO ROJO EXTRA</option>
+            </select>
+
+            <label for="cantidad1">Cantidad:</label>
+            <input type="number" id="cantidad1" name="cantidad1" min="1" required>
+
+            <p id="precio1">Precio: $0</p>
+        </div>
+
+        <button type="button" onclick="agregarProducto()">Agregar Otro Producto</button>
+
+        <button type="submit">Realizar Compra</button>
+    </form>
+
+    <form action="visualizar_ventas.php" method="GET">
+        <button type="submit">Visualizar Ventas</button>
+    </form>
+
+    <form action="ver_inventario.php" method="GET">
+        <button type="submit">Ver Inventario</button>
+    </form>
+
+    <script>
+        const preciosCubeta = {
+            "HUEVO BLANCO A": 12500,
+            "HUEVO BLANCO AA": 13500,
+            "HUEVO BLANCO B": 11000,
+            "HUEVO BLANCO EXTRA": 16000,
+            "HUEVO ROJO A": 12500,
+            "HUEVO ROJO AA": 13500,
+            "HUEVO ROJO B": 11000,
+            "HUEVO ROJO EXTRA": 16000
+        };
+
+        const preciosUnidad = {
+            "HUEVO BLANCO A": 417,
+            "HUEVO BLANCO AA": 450,
+            "HUEVO BLANCO B": 367,
+            "HUEVO BLANCO EXTRA": 533,
+            "HUEVO ROJO A": 417,
+            "HUEVO ROJO AA": 450,
+            "HUEVO ROJO B": 367,
+            "HUEVO ROJO EXTRA": 533
+        };
+
+        let productoCount = 1;
+
+        function actualizarPrecios() {
+            for (let i = 1; i <= productoCount; i++) {
+                const modo = document.getElementById("modo").value;
+                const huevo = document.getElementById("huevo" + i).value;
+                const precio = modo === "cubeta" ? preciosCubeta[huevo] : preciosUnidad[huevo];
+                document.getElementById("precio" + i).textContent = "Precio: $" + precio;
+            }
+        }
+
+        function agregarProducto() {
+            productoCount++;
+
+            const div = document.createElement("div");
+            div.innerHTML = `
+                <label for="huevo${productoCount}">Tipo de Huevo:</label>
+                <select id="huevo${productoCount}" name="huevo${productoCount}" onchange="actualizarPrecios()">
+                    ${Object.keys(preciosCubeta).map(huevo => `<option value="${huevo}">${huevo}</option>`).join("")}
+                </select>
+
+                <label for="cantidad${productoCount}">Cantidad:</label>
+                <input type="number" id="cantidad${productoCount}" name="cantidad${productoCount}" min="1" required>
+
+                <p id="precio${productoCount}">Precio: $0</p>
+            `;
+
+            document.getElementById("productos").appendChild(div);
+            actualizarPrecios();
+        }
+
+        actualizarPrecios();
+    </script>
+
+</body>
+</html>
